@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;600&display=swap');
+
+:root {
+    --bg-deep: #020203;
+    --glass-bg: rgba(18, 18, 24, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --glass-highlight: rgba(255, 255, 255, 0.1);
+    --accent: #e0e0e0;
+    --text-dim: #777;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--bg-deep);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    color: var(--accent);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+/* --- 背景与氛围 --- */
+
+.viewport {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+    background: 
+        radial-gradient(circle at 50% 40%, #15151f 0%, transparent 50%),
+        linear-gradient(to bottom, #050508 0%, #000000 100%);
+}
+
+/* Deep Vignette (暗角) */
+.vignette-layer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.95) 100%);
+    pointer-events: none;
+}
+
+canvas { display: block; position: relative; z-index: 0; }
+
+/* --- UI 面板 --- */
+.hud-panel {
+    position: relative;
+    z-index: 10;
+    width: 560px;
+    max-width: 92%;
+    margin-bottom: 45px;
+    
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    
+    border: 1px solid var(--glass-border);
+    border-top: 1px solid var(--glass-highlight);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.03);
+    
+    border-radius: 24px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* 输入框 */
+.input-section { display: flex; gap: 16px; align-items: stretch; }
+.input-wrapper { 
+    position: relative; flex-grow: 1; 
+    background: rgba(0,0,0,0.3); 
+    border-radius: 12px; 
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+.input-wrapper:focus-within {
+    border-color: rgba(255,255,255,0.25);
+    background: rgba(0,0,0,0.5);
+}
+
+input[type="text"] { 
+    width: 100%; background: transparent; border: none; color: #fff; 
+    padding: 16px 20px; padding-right: 60px; 
+    font-family: 'Space Grotesk', sans-serif; font-size: 15px; 
+    outline: none; letter-spacing: 1.5px;
+}
+#charCount { 
+    position: absolute; right: 20px; top: 50%; transform: translateY(-50%); 
+    font-size: 11px; color: var(--text-dim); font-family: 'Space Grotesk', monospace; pointer-events: none; 
+}
+
+/* 按钮 */
+button {
+    background: #e0e0e0; color: #000; border: none; border-radius: 12px; padding: 0 28px; 
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 1.5px;
+    cursor: pointer; transition: all 0.3s ease;
+}
+button:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+button:active { transform: scale(0.96); }
+
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); width: 100%; }
+
+/* 滑块 */
+.controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.slider-group { display: flex; flex-direction: column; gap: 14px; }
+.slider-header { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; font-weight: 600; }
+.slider-title { color: var(--accent); }
+
+.range-wrapper { position: relative; height: 20px; display: flex; align-items: center; }
+
+/* --- 滑块轨道样式 (Updated) --- */
+input[type="range"] { 
+    -webkit-appearance: none; /* 兼容 WebKit */
+    appearance: none;         /* 标准兼容性属性 */
+    width: 100%; 
+    height: 6px; 
+    background: rgba(255,255,255,0.08); 
+    border-radius: 3px; 
+    outline: none; 
+    cursor: pointer;
+}
+
+/* WebKit (Chrome, Safari) 拇指样式 */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none; 
+    width: 16px; 
+    height: 16px; 
+    background: #fff; 
+    border-radius: 50%; 
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.05); 
+    transition: all 0.2s ease;
+    margin-top: 0; /* 对齐修正 */
+}
+
+/* Firefox 拇指样式 */
+input[type="range"]::-moz-range-thumb {
+    width: 16px; 
+    height: 16px; 
+    background: #fff; 
+    border: none;
+    border-radius: 50%; 
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.05); 
+    transition: all 0.2s ease;
+}
+
+/* 悬停效果 */
+input[type="range"]::-webkit-slider-thumb:hover { 
+    transform: scale(1.1); 
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.15); 
+}
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1); 
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.15); 
+}
+
+@media (max-width: 600px) {
+    .controls-grid { grid-template-columns: 1fr; gap: 24px; }
+    .hud-panel { padding: 24px; width: 92%; }
+    .input-section { flex-direction: column; }
+    .input-wrapper, button { width: 100%; height: 50px; }
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celestial Piano</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="vignette-layer"></div>
+
+    <div class="viewport">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="hud-panel">
+        
+        <div class="input-section">
+            <div class="input-wrapper">
+                <input type="text" id="userText" maxlength="50" value="Interstellar Silence" placeholder="TYPE MESSAGE...">
+                <span id="charCount">20 / 50</span>
+            </div>
+            <button id="generateBtn">
+                <span class="btn-content">INIT</span>
+            </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="controls-grid">
+            
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span class="slider-label">STILL</span>
+                    <span class="slider-title">DYNAMICS</span>
+                    <span class="slider-label">WAVE</span>
+                </div>
+                <div class="range-wrapper">
+                    <input type="range" id="dynamicsSlider" min="0" max="100" value="35">
+                </div>
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span class="slider-label">SLOW</span>
+                    <span class="slider-title">TEMPO</span>
+                    <span class="slider-label">FAST</span>
+                </div>
+                <div class="range-wrapper">
+                    <input type="range" id="tempoSlider" min="0" max="100" value="45">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
