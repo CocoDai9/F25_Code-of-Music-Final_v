@@ -158,7 +158,7 @@ const VISUAL_CONFIG = {
     wobbleSpeed: 0.002,  
     wobbleRange: 10,
     dustCount: 200, 
-    dustRadius: 2.0 
+    dustRadius: 2.5 
 };
 
 //dust section
@@ -180,7 +180,7 @@ class Dust {
         this.y = r * Math.sin(phi) * Math.sin(theta);
         this.z = r * Math.cos(phi);
         
-        this.size = Math.random() * 1.0 + 0.5;
+        this.size = Math.random() * 1.5 + 0.5;
         
         // blink
         this.blinkSpeed = 0.002 + Math.random() * 0.005; // speed
