@@ -23,7 +23,7 @@ body {
     align-items: flex-end;
 }
 
-/* --- 背景系统 --- */
+/* background */
 .viewport {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
     background: 
@@ -39,7 +39,7 @@ body {
 
 canvas { display: block; position: relative; z-index: 0; }
 
-/* --- UI 面板 (Ultra Compact) --- */
+/* UI */
 .hud-panel {
     position: relative;
     z-index: 10;
@@ -59,17 +59,16 @@ canvas { display: block; position: relative; z-index: 0; }
     
     border-radius: 16px;
     
-    /* 2. 垂直高度压缩：减小 Padding 和 Gap */
     padding: 20px 24px; 
     display: flex;
     flex-direction: column;
-    gap: 16px; /* 元素间距更紧密 */
+    gap: 16px; 
     
     transition: transform 0.3s ease;
 }
 
-/* 输入框区域 */
-.input-section { display: flex; gap: 10px; align-items: stretch; height: 36px; /* 固定高度 */ }
+/* input area */
+.input-section { display: flex; gap: 10px; align-items: stretch; height: 36px; }
 
 .input-wrapper { 
     position: relative; flex-grow: 1; 
@@ -86,7 +85,6 @@ canvas { display: block; position: relative; z-index: 0; }
 
 input[type="text"] { 
     width: 100%; background: transparent; border: none; color: #fff; 
-    /* 字体和内边距调小 */
     padding: 0 12px; padding-right: 45px; height: 100%;
     font-family: 'Space Grotesk', sans-serif; font-size: 13px; 
     outline: none; letter-spacing: 0.5px; 
@@ -97,7 +95,7 @@ input[type="text"] {
     font-size: 9px; color: var(--text-dim); font-family: 'Space Grotesk', monospace; pointer-events: none; 
 }
 
-/* 按钮 - 更小巧 */
+/* bttn */
 button {
     background: #e0e0e0; color: #000; border: none; border-radius: 8px; padding: 0 16px; 
     font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 1px;
@@ -110,7 +108,7 @@ button:active { transform: scale(0.96); }
 
 .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); width: 100%; }
 
-/* 滑块区域 */
+/* slider */
 .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .slider-group { display: flex; flex-direction: column; gap: 8px; }
 
@@ -122,12 +120,12 @@ button:active { transform: scale(0.96); }
 
 .range-wrapper { position: relative; height: 14px; display: flex; align-items: center; }
 
-/* 滑块轨道 */
+/* slider 222 */
 input[type="range"] { 
     -webkit-appearance: none;
     appearance: none;
     width: 100%; 
-    height: 4px; /* 轨道更细 */
+    height: 4px;
     background: rgba(255,255,255,0.1); 
     border-radius: 2px; 
     outline: none; 
@@ -138,7 +136,7 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 12px; height: 12px; /* 拇指更小 */
+    width: 12px; height: 12px;
     background: #fff; border-radius: 50%; 
     box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
     transition: all 0.2s ease;
@@ -160,4 +158,32 @@ input[type="range"]::-moz-range-thumb:hover { transform: scale(1.2); box-shadow:
     .hud-panel { padding: 20px; width: 92%; }
     .input-section { height: auto; flex-direction: column; }
     .input-wrapper, button { width: 100%; height: 40px; }
+}
+
+
+/* header */
+.page-header {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    z-index: 100; 
+    font-family: 'Space Grotesk', monospace;
+    text-transform: uppercase; 
+}
+
+.page-header h1 {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 2px;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); 
+}
+
+.page-header p {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    margin-top: 6px;
+    font-weight: 300;
 }

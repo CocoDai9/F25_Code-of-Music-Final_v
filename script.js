@@ -3,7 +3,7 @@
  */
 const CONFIG = {
     maxChars: 50,
-    baseRadius: 200,
+    baseRadius: 220,
     perspective: 850,
     baseRotationSpeed: 0.0003,
     hueStart: 210, 
@@ -18,9 +18,9 @@ const STATE = {
     currentHue: 210
 };
 
-/**
- * AUDIO ENGINE: Soft Grand Piano
- */
+// ==========================================
+// AUDIO
+// ==========================================
 const AudioEngine = {
     ctx: null, isPlaying: false, timer: null, sequence: [], step: 0, masterGain: null,
     
@@ -143,10 +143,74 @@ const AudioEngine = {
     stop() { this.isPlaying = false; clearTimeout(this.timer); }
 };
 
-// --- VISUAL ENGINE ---
+// ==========================================
+// VISUAL
+// ==========================================
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-let width, height, particles = [];
+let width, height;
+let particles = [];
+let dust = []; 
+
+//
+const VISUAL_CONFIG = {
+    ...CONFIG,
+    wobbleSpeed: 0.002,  
+    wobbleRange: 10,
+    dustCount: 200, 
+    dustRadius: 2.0 
+};
+
+//dust section
+class Dust {
+    constructor() {
+        this.reset();
+
+        this.angleOffset = Math.random() * Math.PI * 2;
+    }
+    reset() {
+        // x,y
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos((Math.random() * 2) - 1);
+        
+        // range
+        const r = VISUAL_CONFIG.baseRadius * (1.2 + Math.random() * VISUAL_CONFIG.dustRadius); 
+        
+        this.x = r * Math.sin(phi) * Math.cos(theta);
+        this.y = r * Math.sin(phi) * Math.sin(theta);
+        this.z = r * Math.cos(phi);
+        
+        this.size = Math.random() * 1.0 + 0.5;
+        
+        // blink
+        this.blinkSpeed = 0.002 + Math.random() * 0.005; // speed
+        this.blinkPhase = Math.random() * Math.PI * 2;   // phase
+    }
+    
+    project(time, rotationSpeed) {
+        let angleY = time * rotationSpeed * 0.3 + this.angleOffset; 
+        
+        // Floating
+        let floatY = this.y + Math.sin(time * 0.001 + this.blinkPhase) * 20;
+
+        // 3D rotation
+        let x1 = this.x * Math.cos(angleY) - this.z * Math.sin(angleY);
+        let z1 = this.x * Math.sin(angleY) + this.z * Math.cos(angleY);
+        
+        const scale = VISUAL_CONFIG.perspective / (VISUAL_CONFIG.perspective + z1 + 300);
+        
+        // Sine Wave
+        const blink = 0.1 + (Math.sin(time * this.blinkSpeed + this.blinkPhase) + 1) / 2 * 0.5;
+
+        return {
+            x: width / 2 + x1 * scale,
+            y: height / 2.2 + floatY * scale,
+            scale: scale,
+            alpha: blink * scale, 
+            size: this.size
+        };
+    }
+}
 
 class Particle {
     constructor(char, index, total) {
@@ -154,73 +218,132 @@ class Particle {
         const y = 1 - (index / (total - 1)) * 2;
         const r = Math.sqrt(1 - y * y);
         const theta = (Math.PI * (3 - Math.sqrt(5))) * index;
-        this.ox = Math.cos(theta) * r; this.oy = y; this.oz = Math.sin(theta) * r;
-        this.phase = Math.random() * Math.PI * 2; this.pulse = 0; 
+        
+        this.ox = Math.cos(theta) * r; 
+        this.oy = y; 
+        this.oz = Math.sin(theta) * r;
+        
+        this.phase = Math.random() * Math.PI * 2; 
+        this.pulse = 0; 
     }
+
     project(time) {
         const dynamics = STATE.dynamics / 100;
-        const wave = Math.sin(time * 0.002 + this.oy * 6 + this.phase);
-        const currentRadius = CONFIG.baseRadius + (wave * dynamics * 80);
-
         const tempoSpeed = STATE.tempo / 100;
-        const rotationSpeed = CONFIG.baseRotationSpeed + (tempoSpeed * 0.001);
+        const rotationSpeed = VISUAL_CONFIG.baseRotationSpeed + (tempoSpeed * 0.001);
         let angleY = time * rotationSpeed;
         
-        let x = this.ox * currentRadius; let y = this.oy * currentRadius; let z = this.oz * currentRadius;
+        const breathe = Math.sin(time * VISUAL_CONFIG.wobbleSpeed) * VISUAL_CONFIG.wobbleRange;
+        const wave = Math.sin(time * 0.002 + this.oy * 6 + this.phase);
+        
+        const currentRadius = VISUAL_CONFIG.baseRadius + breathe + (wave * dynamics * 80);
+
+        let x = this.ox * currentRadius; 
+        let y = this.oy * currentRadius; 
+        let z = this.oz * currentRadius;
+
         let x1 = x * Math.cos(angleY) - z * Math.sin(angleY);
         let z1 = x * Math.sin(angleY) + z * Math.cos(angleY);
-        const scale = CONFIG.perspective / (CONFIG.perspective + z1 + 300);
+        
+        const scale = VISUAL_CONFIG.perspective / (VISUAL_CONFIG.perspective + z1 + 300);
         
         return { 
             x: width / 2 + x1 * scale, 
             y: (height / 2.2) + y * scale, 
-            z: z1, scale: scale, alpha: scale 
+            z: z1, 
+            scale: scale, 
+            alpha: scale 
         };
     }
 }
 
 function processText(text) {
-    const len = Math.min(text.length, CONFIG.maxChars);
-    const ratio = len / CONFIG.maxChars; 
-    STATE.currentHue = CONFIG.hueStart - (ratio * (CONFIG.hueStart - CONFIG.hueEnd));
-    particles = []; let fullText = text;
-    const target = Math.max(text.length * 3, 120);
+    const len = Math.min(text.length, VISUAL_CONFIG.maxChars);
+    const ratio = len / VISUAL_CONFIG.maxChars; 
+    STATE.currentHue = VISUAL_CONFIG.hueStart - (ratio * (VISUAL_CONFIG.hueStart - VISUAL_CONFIG.hueEnd));
+    
+    particles = []; 
+    let fullText = text;
+    const target = Math.max(text.length * 3, 250); 
     while(fullText.length < target) fullText += " " + text;
-    if(fullText.length > 300) fullText = fullText.substring(0, 300);
-    for(let i=0; i<fullText.length; i++) { if(fullText[i] !== ' ') particles.push(new Particle(fullText[i], i, fullText.length)); }
+    if(fullText.length > 500) fullText = fullText.substring(0, 500); 
+    
+    for(let i=0; i<fullText.length; i++) { 
+        if(fullText[i] !== ' ') particles.push(new Particle(fullText[i], i, fullText.length)); 
+    }
+    
+    dust = [];
+    for(let i=0; i<VISUAL_CONFIG.dustCount; i++) dust.push(new Dust());
 }
 
 function animate(time) {
     ctx.clearRect(0, 0, width, height);
-    const projected = particles.map(p => { p.pulse *= 0.93; return { ...p.project(time), char: p.char, pulse: p.pulse }; });
-    projected.sort((a, b) => a.scale - b.scale);
 
-    ctx.lineWidth = 0.5;
-    for(let i=0; i<projected.length; i++) {
-        const p1 = projected[i]; if(p1.scale < 0.8) continue;
-        for(let j=i+1; j<Math.min(i+10, projected.length); j++) {
-            const p2 = projected[j];
-            const dx = p1.x - p2.x; const dy = p1.y - p2.y; const dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist < CONFIG.connectionDist * p1.scale) {
-                const alpha = (1 - dist / (CONFIG.connectionDist * p1.scale)) * 0.15;
-                ctx.strokeStyle = `hsla(${STATE.currentHue}, 50%, 80%, ${alpha})`;
-                ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-            }
-        }
-    }
+    const dynamicHue = STATE.currentHue + Math.sin(time * 0.0005) * 30;
 
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    projected.forEach(p => {
-        const alpha = Math.max(0.05, p.alpha - 0.2);
-        const size = (14 + p.pulse * 7) * p.scale; 
-        ctx.font = `${size}px 'Space Grotesk'`;
-        const lightness = 70 + (STATE.dynamics/100 * 15) + (p.pulse * 25);
-        const color = `hsla(${STATE.currentHue}, 90%, ${lightness}%, ${alpha})`;
-        ctx.fillStyle = color;
-        if(p.pulse > 0.05) { ctx.shadowBlur = 25 * p.scale; ctx.shadowColor = color; } 
-        else { ctx.shadowBlur = 0; }
-        ctx.fillText(p.char, p.x, p.y); ctx.shadowBlur = 0;
+    // Center Glow
+    const glow = ctx.createRadialGradient(width/2, height/2.2, 0, width/2, height/2.2, VISUAL_CONFIG.baseRadius * 1.8);
+    glow.addColorStop(0, `hsla(${dynamicHue}, 80%, 60%, 0.18)`); 
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, width, height);
+
+    // prepare data
+    const tempoSpeed = STATE.tempo / 100;
+    const rotationSpeed = VISUAL_CONFIG.baseRotationSpeed + (tempoSpeed * 0.001);
+
+    const projectedParticles = particles.map(p => { 
+        p.pulse *= 0.94; 
+        return { ...p.project(time), type: 'text', char: p.char, pulse: p.pulse }; 
     });
+
+    const projectedDust = dust.map(d => {
+        return { ...d.project(time, rotationSpeed), type: 'dust' };
+    });
+
+    const allElements = [...projectedParticles, ...projectedDust];
+    allElements.sort((a, b) => a.scale - b.scale);
+
+    // draw
+    ctx.textAlign = 'center'; 
+    ctx.textBaseline = 'middle';
+    
+    allElements.forEach(p => {
+        if (p.type === 'dust') {
+            // draw dust
+            const alpha = Math.max(0, p.alpha);
+            
+            // dust color
+            ctx.fillStyle = `hsla(${dynamicHue}, 30%, 90%, ${alpha})`;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * p.scale, 0, Math.PI * 2);
+            ctx.fill();
+            
+        } else {
+            // draw text
+            const alpha = Math.max(0.05, p.alpha - 0.1); 
+            const size = (16 + p.pulse * 10) * p.scale; 
+            
+            ctx.font = `${size}px 'Space Grotesk', monospace`;
+            
+            const lightness = 65 + (STATE.dynamics/100 * 20) + (p.pulse * 35);
+            const color = `hsla(${dynamicHue}, 90%, ${lightness}%, ${alpha})`;
+            
+            ctx.fillStyle = color;
+            
+            if(p.pulse > 0.1) { 
+                ctx.shadowBlur = (15 * p.pulse) * p.scale; 
+                ctx.shadowColor = color; 
+            } else { 
+                ctx.shadowBlur = 0; 
+            }
+            
+            ctx.fillText(p.char, p.x, p.y); 
+            ctx.shadowBlur = 0;
+        }
+    });
+
     requestAnimationFrame(animate);
 }
 
@@ -244,6 +367,14 @@ btn.addEventListener('click', () => {
         processText(text); if(AudioEngine.isPlaying) AudioEngine.stop(); AudioEngine.start(text);
     }, 400);
 });
-window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
-width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight;
-processText(input.value); animate(0);
+
+window.addEventListener('resize', () => { 
+    width = canvas.width = window.innerWidth; 
+    height = canvas.height = window.innerHeight; 
+});
+
+// initial state
+width = canvas.width = window.innerWidth; 
+height = canvas.height = window.innerHeight;
+processText(input.value); 
+animate(0);
