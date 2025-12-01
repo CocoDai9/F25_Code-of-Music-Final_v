@@ -3,26 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celestial Piano</title>
+    <title>F25_Code of Music_Final</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<div style="padding-top: 10px;"></div>
+
+    <!-- Header Section containing Title, Author, and Instructions -->
     <div class="page-header">
-        <h1>INTERSTELLAR SOUND</h1>
+        <h1>INTERSTELLAR</h1>
         <p>By Coco Dai</p>
+
+<div style="padding-top: 20px;"></div>
+
+        <!-- Instruction Panel (Left Aligned) -->
+        <div class="instruction-panel">
+            <div class="inst-main">
+                PLEASE TYPE YOUR MESSAGE IN THE INPUT BOX
+            </div>
+            <div class="inst-grid">
+                <div class="inst-item">
+                    <span class="inst-label">DYNAMICS CONTROL:</span>
+                    <span class="inst-val">TRACKPAD ZOOM / SLIDER</span>
+                </div>
+                <div class="inst-item">
+                    <span class="inst-label">TEMPO CONTROL:</span>
+                    <span class="inst-val">DRAG SPHERE / SLIDER</span>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Visual Background Layers -->
     <div class="vignette-layer"></div>
 
     <div class="viewport">
         <canvas id="canvas"></canvas>
     </div>
 
+    <!-- HUD Panel (Bottom Controls) -->
     <div class="hud-panel">
         <div class="input-section">
             <div class="input-wrapper">
-                <input type="text" id="userText" maxlength="50" value="Interstellar Silence" placeholder="TYPE MESSAGE...">
+                <input type="text" id="userText" maxlength="50" value="Type Your Message" placeholder="TYPE MESSAGE...">
                 <span id="charCount">20 / 50</span>
             </div>
             <button id="generateBtn">

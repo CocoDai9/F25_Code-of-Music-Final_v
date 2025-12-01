@@ -12,10 +12,10 @@ const CONFIG = {
 };
 
 const STATE = {
-    text: "Interstellar Silence",
+    text: "Type Your Message",
     dynamics: 35,
     tempo: 45,
-    currentHue: 210
+    currentHue: 210,
 };
 
 // ==========================================
@@ -371,6 +371,51 @@ btn.addEventListener('click', () => {
 window.addEventListener('resize', () => { 
     width = canvas.width = window.innerWidth; 
     height = canvas.height = window.innerHeight; 
+});
+
+// ==========================================
+// MOUSE INTERACTION (NEWLY ADDED)
+// ==========================================
+
+// 1. Mouse Wheel -> Dynamics
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const direction = e.deltaY > 0 ? -1 : 1; 
+    const step = 3;
+    let newValue = STATE.dynamics + (direction * step);
+    newValue = Math.max(0, Math.min(80, newValue));
+    STATE.dynamics = newValue;
+    dynamicsSlider.value = newValue; 
+}, { passive: false });
+
+// 2. Drag -> Tempo
+let isDragging = false;
+let lastMouseX = 0;
+
+canvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    lastMouseX = e.clientX;
+    canvas.style.cursor = 'grabbing';
+});
+
+window.addEventListener('mouseup', () => {
+    isDragging = false;
+    canvas.style.cursor = 'default';
+});
+
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - lastMouseX;
+    lastMouseX = e.clientX;
+    
+    // Sensitivity
+    const sensitivity = 0.1; 
+    let newValue = STATE.tempo + (deltaX * sensitivity);
+    newValue = Math.max(0, Math.min(100, newValue));
+    
+    STATE.tempo = newValue;
+    tempoSlider.value = newValue;
 });
 
 // initial state

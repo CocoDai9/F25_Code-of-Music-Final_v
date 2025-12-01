@@ -39,12 +39,85 @@ body {
 
 canvas { display: block; position: relative; z-index: 0; }
 
-/* UI */
+/* HEADER SECTION (Left Aligned) */
+.page-header {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    z-index: 100; 
+    font-family: 'Space Grotesk', monospace;
+    text-transform: uppercase; 
+    text-align: left; /* Ensure everything aligns left */
+    pointer-events: none; /* Let mouse clicks pass through to canvas */
+}
+
+.page-header h1 {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 2px;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); 
+}
+
+.page-header p {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    margin-top: 6px;
+    font-weight: 300;
+}
+
+/* --- Instruction Panel Styling (Nested in Header) --- */
+.instruction-panel {
+    margin-top: 20px; /* Space below "By Coco Dai" */
+    font-family: 'Space Grotesk', 'Courier New', monospace;
+    pointer-events: none;
+}
+
+/* Main Message (Bigger, No Border) */
+.inst-main {
+    font-size: 14px; /* Increased Size */
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);
+}
+
+/* Data List (Left Aligned Stack) */
+.inst-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px; /* Increased Size */
+    justify-content: flex-start;
+}
+
+.inst-item {
+    display: inline-block;
+    margin-right: auto;
+    padding: 2px 0;
+}
+
+.inst-label {
+    color: rgba(255, 255, 255, 0.5);
+    margin-right: 8px;
+    font-weight: bold;
+}
+
+.inst-val {
+    color: #a0c0ff;
+    font-weight: 500;
+    text-shadow: 0 0 5px rgba(160, 192, 255, 0.3);
+}
+
+
+/* HUD UI (Bottom) */
 .hud-panel {
     position: relative;
     z-index: 10;
     
-    /* 1. 宽度变窄 */
     width: 420px; 
     max-width: 90%;
     margin-bottom: 35px;
@@ -120,7 +193,7 @@ button:active { transform: scale(0.96); }
 
 .range-wrapper { position: relative; height: 14px; display: flex; align-items: center; }
 
-/* slider 222 */
+/* slider inputs */
 input[type="range"] { 
     -webkit-appearance: none;
     appearance: none;
@@ -153,37 +226,14 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); box-shadow: 0 0 0 4px rgba(255,255,255,0.15); }
 input[type="range"]::-moz-range-thumb:hover { transform: scale(1.2); box-shadow: 0 0 0 4px rgba(255,255,255,0.15); }
 
+/* Mobile Response */
 @media (max-width: 600px) {
     .controls-grid { grid-template-columns: 1fr; gap: 16px; }
     .hud-panel { padding: 20px; width: 92%; }
     .input-section { height: auto; flex-direction: column; }
     .input-wrapper, button { width: 100%; height: 40px; }
-}
-
-
-/* header */
-.page-header {
-    position: absolute;
-    top: 30px;
-    left: 40px;
-    z-index: 100; 
-    font-family: 'Space Grotesk', monospace;
-    text-transform: uppercase; 
-}
-
-.page-header h1 {
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-    letter-spacing: 2px;
-    margin: 0;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); 
-}
-
-.page-header p {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 1px;
-    margin-top: 6px;
-    font-weight: 300;
+    
+    .page-header { left: 20px; top: 20px; }
+    .inst-main { font-size: 12px; }
+    .inst-grid { font-size: 10px; }
 }
