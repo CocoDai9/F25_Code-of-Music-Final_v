@@ -18,9 +18,7 @@ const STATE = {
     currentHue: 210,
 };
 
-// ==========================================
 // AUDIO
-// ==========================================
 const AudioEngine = {
     ctx: null, isPlaying: false, timer: null, sequence: [], step: 0, masterGain: null,
     
@@ -143,9 +141,7 @@ const AudioEngine = {
     stop() { this.isPlaying = false; clearTimeout(this.timer); }
 };
 
-// ==========================================
 // VISUAL
-// ==========================================
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 let width, height;
@@ -373,11 +369,7 @@ window.addEventListener('resize', () => {
     height = canvas.height = window.innerHeight; 
 });
 
-// ==========================================
 // MOUSE INTERACTION (NEWLY ADDED)
-// ==========================================
-
-// 1. Mouse Wheel -> Dynamics
 canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const direction = e.deltaY > 0 ? -1 : 1; 
@@ -388,7 +380,6 @@ canvas.addEventListener('wheel', (e) => {
     dynamicsSlider.value = newValue; 
 }, { passive: false });
 
-// 2. Drag -> Tempo
 let isDragging = false;
 let lastMouseX = 0;
 
